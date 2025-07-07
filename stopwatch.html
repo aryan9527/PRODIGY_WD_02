@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stopwatch</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1f;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #ff007f;
+      font-size: 3rem;
+      text-shadow: 0 0 15px #ff007f;
+      margin-bottom: 30px;
+    }
+
+    .stopwatch {
+      background: #1a1a40;
+      padding: 3rem 2rem;
+      border-radius: 25px;
+      box-shadow: 0 0 20px #ff007f;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .time-display {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      color: #ff66b2;
+      letter-spacing: 2px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .controls button {
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 30px;
+      background: #ff007f;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 12px #ff007f;
+      transition: 0.3s;
+    }
+
+    .controls button:hover {
+      background: transparent;
+      border: 2px solid #ff007f;
+      box-shadow: 0 0 25px #ff007f;
+      color: #ff007f;
+    }
+
+    .laps {
+      max-height: 220px;
+      overflow-y: auto;
+      text-align: left;
+      margin-top: 1rem;
+    }
+
+    .laps p {
+      margin: 5px 0;
+      padding: 8px 10px;
+      background: #262650;
+      border-radius: 6px;
+    }
+
+    .average-time {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #80ffea;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 500px) {
+      .time-display {
+        font-size: 2.8rem;
+      }
+      .controls button {
+        padding: 10px 18px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>⏱ Stopwatch</h1>
+
+  <div class="stopwatch">
+    <div class="time-display" id="time">00:00:00</div>
+
+    <div class="controls">
+      <button onclick="startStopwatch()">Start</button>
+      <button onclick="pauseStopwatch()">Pause</button>
+      <button onclick="resetStopwatch()">Reset</button>
+      <button onclick="recordLap()">Lap</button>
+    </div>
+
+    <div class="laps" id="laps"></div>
+    <div class="average-time" id="averageTime"></div>
+  </div>
+
+  <footer>&copy; 2025 Stopwatch App. develop by Aryan Rajesh Bhoyar.</footer>
+
+
+
+  <script>
+    let startTime, interval;
+    let elapsed = 0;
+    let running = false;
+    let laps = [];
+
+    function formatTime(ms) {
+      let totalSeconds = Math.floor(ms / 1000);
+      let hours = Math.floor(totalSeconds / 3600);
+      let minutes = Math.floor((totalSeconds % 3600) / 60);
+      let seconds = totalSeconds % 60;
+
+      return (
+        String(hours).padStart(2, "0") + ":" +
+        String(minutes).padStart(2, "0") + ":" +
+        String(seconds).padStart(2, "0")
+      );
+    }
+
+    function updateDisplay() {
+      const now = Date.now();
+      const time = running ? elapsed + (now - startTime) : elapsed;
+      document.getElementById("time").innerText = formatTime(time);
+    }
+
+    function startStopwatch() {
+      if (!running) {
+        running = true;
+        startTime = Date.now();
+        interval = setInterval(updateDisplay, 100);
+      }
+    }
+
+    function pauseStopwatch() {
+      if (running) {
+        elapsed += Date.now() - startTime;
+        clearInterval(interval);
+        running = false;
+      }
+    }
+
+    function resetStopwatch() {
+      clearInterval(interval);
+      elapsed = 0;
+      running = false;
+      laps = [];
+      document.getElementById("time").innerText = "00:00:00";
+      document.getElementById("laps").innerHTML = "";
+      document.getElementById("averageTime").innerText = "";
+    }
+
+    function recordLap() {
+      if (!running && elapsed === 0) return;
+      const lapTime = elapsed + (running ? (Date.now() - startTime) : 0);
+      laps.push(lapTime);
+      const lapText = formatTime(lapTime);
+      const lapItem = document.createElement("p");
+      lapItem.textContent = "Lap " + laps.length + ": " + lapText;
+      document.getElementById("laps").appendChild(lapItem);
+
+      const avg = Math.floor(laps.reduce((a, b) => a + b, 0) / laps.length);
+      document.getElementById("averageTime").innerText = "⏳ Average Lap Time: " + formatTime(avg);
+
+      document.getElementById("lapSound").play();
+    }
+  </script>
+
+</body>
+</html>
