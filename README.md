@@ -45,9 +45,4 @@ All **HTML, CSS, and JavaScript** code written in one file for easy handling, sh
 
 ---
 
-## 📸 Screenshots
-
-*(Add your screenshots here if you’d like)*
-
----
 
